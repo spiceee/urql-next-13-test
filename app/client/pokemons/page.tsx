@@ -4,6 +4,34 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { useQuery, gql } from '@urql/next';
 
+
+import { Operation } from "@urql/next";
+import { cacheExchange, createClient, fetchExchange } from "@urql/core";
+import { registerUrql } from "@urql/next/rsc";
+import { AuthConfig, AuthUtilities, authExchange } from "@urql/exchange-auth";
+
+const makeClient = () => {
+  return createClient({
+  url: 'https://graphql-pokeapi.graphcdn.app/',
+    exchanges: [
+      authExchange(async (utils: AuthUtilities): Promise<AuthConfig> => {
+        return {
+          addAuthToOperation(op): Operation {
+            return utils.appendHeaders(op, {
+              "X-Shopify-Access-Token":
+                "12345",
+            });
+          },
+        } as AuthConfig;
+      }),
+      cacheExchange,
+      fetchExchange,
+    ],
+  });
+};
+
+const { getClient } = registerUrql(makeClient);
+
 export default function Page() {
   return (
     <Suspense>
@@ -31,7 +59,7 @@ function Pokemons() {
       <ul>
         {result.data
           ? result.data.pokemons.results.map((x: any) => (
-              <Link href={`/client/pokemons/${x.name}`} key={x.id}><li>{x.name}</li></Link>
+              <li key={x.id}>{x.name}</li>
             ))
           : JSON.stringify(result.error)}
       </ul>
@@ -63,3 +91,14 @@ function Pokemon(props: any) {
     </div>
   );
 }
+
+export const generateStaticParams = async () => {
+  const { data } = await getClient().query(
+    PokemonsQuery,
+    {}
+  );
+
+  return data.pokemons.map((pokemon: any) => ({
+    slug: pokemon.name,
+  }));
+};

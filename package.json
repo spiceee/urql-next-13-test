@@ -6,13 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint-staged": "lint-staged",
+    "git-pre-commit": "eslint"
   },
   "dependencies": {
     "@types/node": "20.5.7",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
+    "@urql/exchange-auth": "^2.1.6",
     "@urql/next": "^1.0.0",
+    "@vercel/git-hooks": "^1.0.0",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
     "graphql": "^16.8.0",
@@ -20,6 +24,12 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "5.2.2",
-    "urql": "^4.0.5"
+    "urql": "^4.0.5",
+    "lint-staged": "^14.0.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --cache --fix",
+    "*.{scss,css}": "stylelint --fix --allow-empty-input",
+    "*.{js,ts,css,scss,md}": "prettier --write"
   }
 }
