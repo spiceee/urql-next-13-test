@@ -6,7 +6,8 @@ import { AuthConfig, AuthUtilities, authExchange } from "@urql/exchange-auth";
 
 const makeClient = () => {
   return createClient({
-  url: 'https://graphql-pokeapi.graphcdn.app/',
+    url: 'https://graphql-pokeapi.graphcdn.app/',
+    fetchOptions: { next: { revalidate: 600 } },
     exchanges: [
       authExchange(async (utils: AuthUtilities): Promise<AuthConfig> => {
         return {
